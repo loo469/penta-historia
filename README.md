@@ -40,10 +40,24 @@ python -m src.game
 
 Ce dépôt contient un squelette jouable, pensé pour être enrichi progressivement par les agents.
 
+## Architecture
+
+Le projet doit évoluer vers une **architecture hexagonale**.
+
+- le **domaine** et les règles du jeu restent au centre
+- les **ports** définissent les interfaces attendues par le cœur applicatif
+- les **adapters** branchent le rendu Pygame, les entrées joueur, le stockage, la CI ou d'autres intégrations
+- la logique métier ne doit pas dépendre directement de Pygame ou d'un détail technique externe
+
+Voir `ARCHITECTURE.md` pour la cible de structure.
+
 ## Collaboration
 
 Le projet avance via **pull requests**.
 
 - pas de merge direct de features sur `main`
-- les checks **CI** et **Sonar** doivent être verts avant merge
+- les revues de code et validations de PR doivent être faites par **Main**
+- comme il n'y a qu'un seul compte GitHub, on ne bloque pas le merge sur un nombre d'approvals
+- les checks **CI** doivent être verts avant merge
+- **Sonar n'est pas bloquant pour l'instant**, le temps que l'intégration PR soit fiable
 - voir `CONTRIBUTING.md` pour la règle de contribution
