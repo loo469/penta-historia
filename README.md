@@ -58,5 +58,6 @@ Le projet avance via **pull requests**.
 - pas de merge direct de features sur `main`
 - les revues de code et validations de PR doivent être faites par **Main**
 - comme il n'y a qu'un seul compte GitHub, on ne bloque pas le merge sur un nombre d'approvals
-- les checks **CI** et **Sonar** doivent être verts avant merge
+- les checks **CI** doivent être verts avant merge
+- **Sonar n'est pas bloquant pour l'instant**, le temps que l'intégration PR soit fiable
 - voir `CONTRIBUTING.md` pour la règle de contribution

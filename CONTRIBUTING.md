@@ -17,9 +17,10 @@ We work through **pull requests**.
 Before a PR can be merged, the following must be green:
 
 - GitHub Actions CI
-- Sonar checks / quality gate
 
-If Sonar is red, the PR is **not** ready to merge.
+Sonar is planned, but it is **not blocking for merge right now** while the integration is being set up.
+
+Once Sonar is reliably connected to pull requests, the quality gate can be made mandatory again.
 
 ## Expected quality bar
 
