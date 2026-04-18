@@ -1,6 +1,7 @@
 from src.adapters.climate.in_memory import (
     InMemoryClimateRepository,
     InMemoryMythLedger,
+    WorldStateClimateEffectsAdapter,
     WorldStateEventAdapter,
     WorldStateReadAdapter,
 )
@@ -8,6 +9,7 @@ from src.adapters.climate.in_memory import (
 __all__ = [
     "InMemoryClimateRepository",
     "InMemoryMythLedger",
+    "WorldStateClimateEffectsAdapter",
     "WorldStateEventAdapter",
     "WorldStateReadAdapter",
 ]

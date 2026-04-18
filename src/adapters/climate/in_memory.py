@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from statistics import mean
 
-from src.domain.climate import Catastrophe, ClimateState, Myth, RegionSnapshot
+from src.domain.climate import Catastrophe, CityClimateEffect, CitySnapshot, ClimateState, Myth, RegionSnapshot
 from src.domain.model import WorldState
 
 
@@ -65,6 +65,20 @@ class WorldStateReadAdapter:
             )
         return snapshots
 
+    def get_city_snapshots(self) -> list[CitySnapshot]:
+        return [
+            CitySnapshot(
+                city_name=city.name,
+                civ_id=city.civ_id,
+                region_key=self._region_for_y(city.y),
+                population=city.population,
+                storage=city.storage,
+                x=city.x,
+                y=city.y,
+            )
+            for city in self.world.cities
+        ]
+
     def _region_for_y(self, y: int) -> str:
         ratio = (y + 0.5) / max(1, self.world.height)
         if ratio < 1 / 3:
@@ -97,6 +111,45 @@ class WorldStateEventAdapter:
             civ.stability = max(0.0, civ.stability - catastrophe.stability_impact * 1.1)
 
         self.record_world_event(catastrophe.description)
+
+
+class WorldStateClimateEffectsAdapter:
+    def __init__(self, world: WorldState) -> None:
+        self.world = world
+
+    def apply_city_climate_effects(self, effects: list[CityClimateEffect]) -> None:
+        if not effects:
+            return
+
+        cities_by_name = {city.name: city for city in self.world.cities}
+        civ_stability_delta: dict[int, float] = {}
+        migration_logs: list[str] = []
+
+        for effect in effects:
+            city = cities_by_name.get(effect.city_name)
+            if city is None:
+                continue
+            city.climate_output_modifier = effect.output_modifier
+            city.migration_pressure = effect.migration_pressure
+            city.storage = max(0.0, city.storage + effect.storage_delta)
+            city.population = max(1.0, city.population - effect.migrants_out)
+
+            if effect.target_city_name is not None and effect.migrants_in > 0:
+                target_city = cities_by_name.get(effect.target_city_name)
+                if target_city is not None:
+                    target_city.population += effect.migrants_in
+                    migration_logs.append(
+                        f"{effect.migrants_in:.1f} habitants quittent {city.name} vers {target_city.name} sous la pression du climat."
+                    )
+
+            civ_stability_delta[city.civ_id] = civ_stability_delta.get(city.civ_id, 0.0) + effect.stability_delta
+
+        for civ_id, delta in civ_stability_delta.items():
+            civ = self.world.civilizations[civ_id]
+            civ.stability = _clamp(civ.stability + delta, 0.0, 20.0)
+
+        for entry in migration_logs[:3]:
+            self.world.log.append(entry)
 
 
 class InMemoryMythLedger:

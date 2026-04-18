@@ -2,8 +2,22 @@ from __future__ import annotations
 
 from statistics import mean
 
-from src.application.ports import ClimateRepositoryPort, MythLedgerPort, WorldEventPort, WorldReadPort
-from src.domain.climate import Catastrophe, ClimateState, Myth, RegionClimateProfile
+from src.application.ports import (
+    ClimateEffectsPort,
+    ClimateRepositoryPort,
+    MythLedgerPort,
+    WorldEventPort,
+    WorldReadPort,
+)
+from src.domain.climate import (
+    Catastrophe,
+    CityClimateEffect,
+    CitySnapshot,
+    ClimateImpactReport,
+    ClimateState,
+    Myth,
+    RegionClimateProfile,
+)
 
 
 SEASON_TEMPERATURE_SHIFT = {
@@ -147,6 +161,125 @@ class UpdateRegionalClimate:
         if self.world_events is not None and climate.anomaly != previous_anomaly:
             self.world_events.record_world_event(f"Le climat bascule vers l'anomalie {climate.anomaly}.")
         return climate
+
+
+class ApplyClimateEffectsToCities:
+    def __init__(
+        self,
+        climate_repository: ClimateRepositoryPort,
+        world_reader: WorldReadPort,
+        climate_effects: ClimateEffectsPort,
+        world_events: WorldEventPort | None = None,
+    ) -> None:
+        self.climate_repository = climate_repository
+        self.world_reader = world_reader
+        self.climate_effects = climate_effects
+        self.world_events = world_events
+
+    def execute(self) -> ClimateImpactReport:
+        climate = self.climate_repository.load()
+        city_snapshots = self.world_reader.get_city_snapshots()
+        if not city_snapshots:
+            return ClimateImpactReport(affected_cities=0, migrating_population=0.0, strongest_pressure=0.0)
+
+        current_catastrophes = {
+            catastrophe.region_key: catastrophe
+            for catastrophe in climate.active_catastrophes
+            if catastrophe.year == climate.year and catastrophe.season_name == climate.season_name
+        }
+        safest_by_civ = self._select_safest_cities(city_snapshots, climate)
+
+        effects: list[CityClimateEffect] = []
+        total_migration = 0.0
+        strongest_pressure = 0.0
+        for city in city_snapshots:
+            profile = climate.region_profiles.get(city.region_key)
+            output_modifier = climate.fertility_modifier
+            migration_pressure = 0.0
+            stability_delta = 0.0
+            storage_delta = 0.0
+
+            if profile is not None:
+                output_modifier = profile.fertility_modifier
+                migration_pressure += max(0.0, 0.92 - profile.fertility_modifier)
+                if climate.anomaly == "dry":
+                    migration_pressure += 0.08
+                    storage_delta -= 0.22
+                elif climate.anomaly == "storm":
+                    migration_pressure += 0.05
+                    storage_delta -= 0.12
+                elif climate.anomaly == "frost":
+                    migration_pressure += 0.06
+                    storage_delta -= 0.15
+
+            catastrophe = current_catastrophes.get(city.region_key)
+            if catastrophe is not None:
+                output_modifier *= 1.0 - catastrophe.fertility_impact * 0.45
+                migration_pressure += catastrophe.severity * 0.22
+                stability_delta -= catastrophe.stability_impact * 0.22
+                storage_delta -= catastrophe.fertility_impact * 0.45
+
+            low_storage_penalty = max(0.0, 2.2 - city.storage) * 0.06
+            migration_pressure = _clamp(migration_pressure + low_storage_penalty, 0.0, 1.0)
+            output_modifier = _clamp(output_modifier, 0.55, 1.25)
+            strongest_pressure = max(strongest_pressure, migration_pressure)
+
+            target_city = safest_by_civ.get(city.civ_id)
+            migrants_out = 0.0
+            migrants_in = 0.0
+            target_city_name: str | None = None
+            if (
+                target_city is not None
+                and target_city.city_name != city.city_name
+                and migration_pressure >= 0.22
+            ):
+                migrants_out = round(city.population * min(0.08, migration_pressure * 0.1), 3)
+                migrants_in = migrants_out
+                target_city_name = target_city.city_name
+                total_migration += migrants_out
+                stability_delta -= migration_pressure * 0.08
+
+            effects.append(
+                CityClimateEffect(
+                    city_name=city.city_name,
+                    region_key=city.region_key,
+                    output_modifier=output_modifier,
+                    migration_pressure=migration_pressure,
+                    stability_delta=stability_delta,
+                    storage_delta=storage_delta,
+                    migrants_out=migrants_out,
+                    migrants_in=migrants_in,
+                    target_city_name=target_city_name,
+                )
+            )
+
+        self.climate_effects.apply_city_climate_effects(effects)
+        if self.world_events is not None and total_migration > 0:
+            self.world_events.record_world_event(
+                f"La pression climatique déplace {total_migration:.1f} habitants entre les villes."
+            )
+
+        return ClimateImpactReport(
+            affected_cities=len(effects),
+            migrating_population=round(total_migration, 3),
+            strongest_pressure=round(strongest_pressure, 3),
+        )
+
+    def _select_safest_cities(self, city_snapshots: list[CitySnapshot], climate: ClimateState) -> dict[int, CitySnapshot]:
+        safest: dict[int, CitySnapshot] = {}
+        for city in city_snapshots:
+            profile = climate.region_profiles.get(city.region_key)
+            if profile is None:
+                continue
+            current = safest.get(city.civ_id)
+            if current is None:
+                safest[city.civ_id] = city
+                continue
+
+            current_profile = climate.region_profiles.get(current.region_key)
+            if current_profile is None or profile.fertility_modifier > current_profile.fertility_modifier:
+                safest[city.civ_id] = city
+        return safest
 
 
 class TriggerCatastrophe:
