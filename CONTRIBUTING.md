@@ -7,6 +7,7 @@ We work through **pull requests**.
 - No direct feature work should be merged straight into `main`.
 - Create a branch for each change.
 - Open a PR for review and discussion.
+- Code reviews and PR validation must be performed by **Main**.
 - Merge only when required checks are green.
 
 ## Required checks before merge
