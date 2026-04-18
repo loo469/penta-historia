@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
+from src.domain.gamma import Culture, DivergencePoint, HistoricalEvent, ResearchState
+
 
 class AgentName(str, Enum):
     ALPHA = "Alpha"
@@ -65,6 +67,11 @@ class WorldState:
     civilizations: dict[int, Civilization]
     cities: list[City]
     climate: ClimateState
+    cultures: dict[int, Culture] = field(default_factory=dict)
+    research_states: dict[int, ResearchState] = field(default_factory=dict)
+    divergence_points: list[DivergencePoint] = field(default_factory=list)
+    historical_events: list[HistoricalEvent] = field(default_factory=list)
+    emitted_events: list[dict[str, object]] = field(default_factory=list)
     suggestions: list[Suggestion] = field(default_factory=list)
     log: list[str] = field(default_factory=list)
     tick_count: int = 0
