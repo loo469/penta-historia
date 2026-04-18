@@ -37,6 +37,8 @@ class City:
     y: int
     population: float = 10.0
     storage: float = 5.0
+    climate_output_modifier: float = 1.0
+    migration_pressure: float = 0.0
 
 
 @dataclass

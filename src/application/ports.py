@@ -2,7 +2,14 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from src.domain.climate import Catastrophe, ClimateState, Myth, RegionSnapshot
+from src.domain.climate import (
+    Catastrophe,
+    CityClimateEffect,
+    CitySnapshot,
+    ClimateState,
+    Myth,
+    RegionSnapshot,
+)
 from src.domain.model import WorldState
 
 
@@ -26,6 +33,7 @@ class ClimateRepositoryPort(Protocol):
 
 class WorldReadPort(Protocol):
     def get_region_snapshots(self) -> list[RegionSnapshot]: ...
+    def get_city_snapshots(self) -> list[CitySnapshot]: ...
 
 
 class WorldEventPort(Protocol):
@@ -35,4 +43,8 @@ class WorldEventPort(Protocol):
 
 class MythLedgerPort(Protocol):
     def record(self, myth: Myth) -> None: ...
+
+
+class ClimateEffectsPort(Protocol):
+    def apply_city_climate_effects(self, effects: list[CityClimateEffect]) -> None: ...
 

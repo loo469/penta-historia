@@ -36,6 +36,17 @@ class RegionSnapshot:
     tension: float
 
 
+@dataclass(frozen=True)
+class CitySnapshot:
+    city_name: str
+    civ_id: int
+    region_key: str
+    population: float
+    storage: float
+    x: int
+    y: int
+
+
 @dataclass
 class RegionClimateProfile:
     region_key: str
@@ -70,6 +81,26 @@ class Myth:
     year: int
     intensity: float
     region_key: str | None = None
+
+
+@dataclass(frozen=True)
+class CityClimateEffect:
+    city_name: str
+    region_key: str
+    output_modifier: float
+    migration_pressure: float
+    stability_delta: float
+    storage_delta: float
+    migrants_out: float = 0.0
+    migrants_in: float = 0.0
+    target_city_name: str | None = None
+
+
+@dataclass(frozen=True)
+class ClimateImpactReport:
+    affected_cities: int
+    migrating_population: float
+    strongest_pressure: float
 
 
 @dataclass
