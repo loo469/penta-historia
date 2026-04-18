@@ -72,10 +72,45 @@ class Rumeur:
 
 
 @dataclass
+class OperationResume:
+    tick: int
+    type_operation: TypeOperation
+    source_faction_id: int
+    target_faction_id: int
+    target_region: str
+    success: bool
+    detected: bool
+    alert_level: NiveauAlerte
+    summary: str
+
+
+@dataclass
 class IntrigueState:
     cellules: dict[str, Cellule] = field(default_factory=dict)
     rumeurs: list[Rumeur] = field(default_factory=list)
     intel_points: dict[int, float] = field(default_factory=dict)
+    recent_operations: list[OperationResume] = field(default_factory=list)
+    sabotage_pressure: dict[int, float] = field(default_factory=dict)
+    frontline_disruption: dict[int, float] = field(default_factory=dict)
+
+    def record_operation(self, resume: OperationResume, limit: int = 6) -> None:
+        self.recent_operations = [resume, *self.recent_operations[: limit - 1]]
+
+    def apply_sabotage_pressure(self, faction_id: int, economic_pressure: float, war_disruption: float) -> None:
+        self.sabotage_pressure[faction_id] = self.sabotage_pressure.get(faction_id, 0.0) + economic_pressure
+        self.frontline_disruption[faction_id] = self.frontline_disruption.get(faction_id, 0.0) + war_disruption
+
+    def decay_pressures(self, decay_ratio: float = 0.18) -> None:
+        self.sabotage_pressure = {
+            faction_id: value * (1.0 - decay_ratio)
+            for faction_id, value in self.sabotage_pressure.items()
+            if value * (1.0 - decay_ratio) > 0.05
+        }
+        self.frontline_disruption = {
+            faction_id: value * (1.0 - decay_ratio)
+            for faction_id, value in self.frontline_disruption.items()
+            if value * (1.0 - decay_ratio) > 0.05
+        }
 
 
 @dataclass
@@ -93,6 +128,8 @@ class RapportOperation:
 class SabotageImpact:
     industry_loss: float
     stability_loss: float
+    economic_pressure: float
+    war_disruption: float
 
 
 @dataclass
@@ -193,11 +230,20 @@ def lancer_operation(
 
 def resoudre_sabotage(report: RapportOperation) -> SabotageImpact:
     if report.success:
+        effect_strength = report.effect_strength
         return SabotageImpact(
-            industry_loss=0.9 * report.effect_strength,
-            stability_loss=0.55 * report.effect_strength,
+            industry_loss=0.9 * effect_strength,
+            stability_loss=0.55 * effect_strength,
+            economic_pressure=0.8 * effect_strength,
+            war_disruption=0.6 * effect_strength,
         )
-    return SabotageImpact(industry_loss=0.2 * report.effect_strength, stability_loss=0.1 * report.effect_strength)
+    effect_strength = report.effect_strength
+    return SabotageImpact(
+        industry_loss=0.2 * effect_strength,
+        stability_loss=0.1 * effect_strength,
+        economic_pressure=0.16 * effect_strength,
+        war_disruption=0.08 * effect_strength,
+    )
 
 
 

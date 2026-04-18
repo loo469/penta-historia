@@ -5,6 +5,7 @@ from dataclasses import asdict
 from src.application.delta_ports import ClockPort, EventBusPort, FactionReadPort, RandomPort, WorldReadPort
 from src.domain.intrigue import (
     OperationClandestine,
+    OperationResume,
     RapportOperation,
     Rumeur,
     TypeOperation,
@@ -45,6 +46,22 @@ class LancerOperation:
         world.log.append(
             f"Delta a lancé {operation.type_operation.value} contre {target.name} depuis {cellule.region}."
         )
+        world.intrigue.record_operation(
+            OperationResume(
+                tick=self.clock.now(),
+                type_operation=operation.type_operation,
+                source_faction_id=operation.source_faction_id,
+                target_faction_id=operation.target_faction_id,
+                target_region=operation.target_region,
+                success=report.success,
+                detected=report.detected,
+                alert_level=report.alert_level,
+                summary=(
+                    f"{operation.type_operation.value} sur {target.name} ({'succès' if report.success else 'échec'}, "
+                    f"alerte {report.alert_level.value})"
+                ),
+            )
+        )
         self.event_bus.publish(
             "operation_clandestine_lancee",
             {
@@ -56,8 +73,20 @@ class LancerOperation:
                 "success": report.success,
                 "detected": report.detected,
                 "alert_level": report.alert_level.value,
+                "risk": round(report.risk, 3),
+                "success_chance": round(report.success_chance, 3),
             },
         )
+        if report.detected or report.alert_level.value == "expose":
+            self.event_bus.publish(
+                "reseau_expose",
+                {
+                    "tick": self.clock.now(),
+                    "cell_code": cell_code,
+                    "target_faction_id": operation.target_faction_id,
+                    "alert_level": report.alert_level.value,
+                },
+            )
         return report
 
     __call__ = execute
@@ -79,10 +108,11 @@ class ResoudreSabotage:
         risk_base: float = 0.3,
         intensity: float = 1.0,
     ) -> RapportOperation:
+        world = self.launcher.world_reader.get_world()
         operation = OperationClandestine(
             code=f"sabotage-{cell_code}-{target_faction_id}",
             type_operation=TypeOperation.SABOTAGE,
-            source_faction_id=self.launcher.world_reader.get_world().intrigue.cellules[cell_code].faction_id,
+            source_faction_id=world.intrigue.cellules[cell_code].faction_id,
             target_faction_id=target_faction_id,
             target_region=target_region,
             preparation=preparation,
@@ -94,6 +124,11 @@ class ResoudreSabotage:
         target = self.faction_reader.get_faction(target_faction_id)
         target.industry = max(0.0, target.industry - impact.industry_loss)
         target.stability = max(0.0, target.stability - impact.stability_loss)
+        world.intrigue.apply_sabotage_pressure(
+            target_faction_id,
+            economic_pressure=impact.economic_pressure,
+            war_disruption=impact.war_disruption,
+        )
         self.event_bus.publish(
             "sabotage_resolu",
             {
@@ -167,6 +202,7 @@ class DiffuserRumeur:
                 "message": message,
                 **asdict(impact),
                 "success": report.success,
+                "alert_level": report.alert_level.value,
             },
         )
         return report
@@ -222,6 +258,7 @@ class CollecterRenseignement:
                 **asdict(impact),
                 "success": report.success,
                 "detected": report.detected,
+                "target_faction_id": target_faction_id,
             },
         )
         return report
