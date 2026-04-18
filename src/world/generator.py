@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 
 from src.core.types import City, Civilization, ClimateState, WorldState
+from src.domain.economy import TradeRoute, default_production_rules, default_resource_stocks
 
 
 CIV_NAMES = ["Aster", "Boreal", "Cyrene", "Doria"]
@@ -31,7 +32,16 @@ def generate_world(width: int = 28, height: int = 18, civ_count: int = 4) -> Wor
         x = random.randint(3, width - 4)
         y = random.randint(3, height - 4)
         seeds.append((x, y))
-        cities.append(City(name=f"{civilizations[civ_id].name} Prime", civ_id=civ_id, x=x, y=y))
+        cities.append(
+            City(
+                name=f"{civilizations[civ_id].name} Prime",
+                civ_id=civ_id,
+                x=x,
+                y=y,
+                stocks=default_resource_stocks(),
+                production_rules=default_production_rules(),
+            )
+        )
 
     for y in range(height):
         owner_row: list[int | None] = []
@@ -60,6 +70,23 @@ def generate_world(width: int = 28, height: int = 18, civ_count: int = 4) -> Wor
         cities=cities,
         climate=ClimateState(),
     )
+
+    for city in world.cities:
+        city.fertility = world.fertility[city.y][city.x]
+
+    if len(world.cities) > 1:
+        for index, city in enumerate(world.cities):
+            neighbor = world.cities[(index + 1) % len(world.cities)]
+            if city.name == neighbor.name:
+                continue
+            distance = abs(city.x - neighbor.x) + abs(city.y - neighbor.y)
+            world.trade_routes.append(
+                TradeRoute(source_city=city.name, target_city=neighbor.name, distance=distance, capacity=4.0)
+            )
+            world.trade_routes.append(
+                TradeRoute(source_city=neighbor.name, target_city=city.name, distance=distance, capacity=4.0)
+            )
+
     world.log.append("Le monde a été généré.")
     return world
 
