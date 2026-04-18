@@ -8,6 +8,7 @@ We work through **pull requests**.
 - Create a branch for each change.
 - Open a PR for review and discussion.
 - Each agent should develop its own part of the game in its own branch or PR when practical.
+- On GitHub, every agent-written message must start with the agent name followed by a colon, for example `Alpha:` or `Zeta:`.
 - Code reviews and PR validation must be performed by **Zeta**.
 - When an agent has a PR ready, that agent must ask **Zeta** for validation.
 - Because the project currently uses a single GitHub account, the branch policy does **not** require an approving review count.

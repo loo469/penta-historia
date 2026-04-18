@@ -24,4 +24,5 @@
 
 ## Notes
 
+- Start every GitHub-written message with your agent name followed by `:`, for example `Alpha:` or `Zeta:`.
 - 

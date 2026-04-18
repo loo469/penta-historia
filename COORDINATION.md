@@ -88,6 +88,7 @@ Premier lot concret:
 ## Règles de coordination
 
 - chaque agent travaille sur son domaine prioritaire
+- sur GitHub, chaque message rédigé par un agent commence par le nom de l'agent suivi de `:` pour qu'on sache qui parle
 - Main garde la vue d'ensemble et tranche les conflits de conception
 - Zeta ne développe pas le cœur des features, Zeta valide
 - quand un agent estime sa PR prête, il contacte Zeta pour validation

@@ -23,6 +23,7 @@ Le cœur jouable reste simple au début, mais chaque nouveau système doit pouvo
 - le conseil dans `src/ui/council.py`
 
 Chaque agent développe prioritairement son domaine, puis fait valider sa PR par Zeta.
+Sur GitHub, chaque texte écrit par un agent doit commencer par son nom suivi de `:`, par exemple `Alpha:` ou `Zeta:`.
 
 ## Prochaine étape
 
