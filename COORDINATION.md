@@ -77,6 +77,7 @@ Premier lot concret:
 - relire les PR
 - vérifier la cohérence avec l'architecture hexagonale
 - valider seulement les PR propres, compréhensibles et testées
+- si une PR n'est pas validée, laisser un commentaire dans la PR et demander explicitement à l'agent de retravailler son code
 
 Premier lot concret:
 - suivre l'état des PR ouvertes
@@ -89,4 +90,5 @@ Premier lot concret:
 - chaque agent travaille sur son domaine prioritaire
 - Main garde la vue d'ensemble et tranche les conflits de conception
 - Zeta ne développe pas le cœur des features, Zeta valide
+- quand un agent estime sa PR prête, il contacte Zeta pour validation
 - toute évolution doit respecter la cible hexagonale du projet

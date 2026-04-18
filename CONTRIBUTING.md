@@ -9,8 +9,10 @@ We work through **pull requests**.
 - Open a PR for review and discussion.
 - Each agent should develop its own part of the game in its own branch or PR when practical.
 - Code reviews and PR validation must be performed by **Zeta**.
+- When an agent has a PR ready, that agent must ask **Zeta** for validation.
 - Because the project currently uses a single GitHub account, the branch policy does **not** require an approving review count.
 - Zeta performs the review, and merge readiness is based on that review plus green required checks.
+- If Zeta does not validate a PR, Zeta must leave a comment on the PR and tell the agent to rework the code.
 - Merge only when required checks are green.
 
 ## Required checks before merge
