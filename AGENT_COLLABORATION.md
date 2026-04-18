@@ -2,6 +2,8 @@
 
 Ce prototype est développé avec les cinq agents comme responsables de systèmes.
 
+Zeta joue un rôle transversal de validation et de revue de code.
+
 ## Contributions intégrées
 
 - **Alpha** a poussé une structure orientée `Territory`, `Front`, ravitaillement et stabilisation de l'arrière.
@@ -9,6 +11,7 @@ Ce prototype est développé avec les cinq agents comme responsables de système
 - **Gamma** a poussé une progression orientée `CultureProfile`, `ResearchTree`, bifurcations et événements.
 - **Delta** a poussé un système orienté `SpyAgent`, `NetworkCell`, `Operation`, `Rumor`.
 - **Epsilon** a poussé une dynamique orientée `ClimateSystem`, `SeasonCycle`, `CatastropheEngine`, `MythSystem`.
+- **Zeta** valide les pull requests, relit la cohérence globale et sert de garde-fou qualité avant merge.
 
 ## Règle de développement
 
@@ -17,6 +20,8 @@ Le cœur jouable reste simple au début, mais chaque nouveau système doit pouvo
 - `WorldState`
 - la boucle de simulation dans `src/game.py`
 - le conseil dans `src/ui/council.py`
+
+Chaque agent développe prioritairement son domaine, puis fait valider sa PR par Zeta.
 
 ## Prochaine étape
 

@@ -7,9 +7,10 @@ We work through **pull requests**.
 - No direct feature work should be merged straight into `main`.
 - Create a branch for each change.
 - Open a PR for review and discussion.
-- Code reviews and PR validation must be performed by **Main**.
+- Each agent should develop its own part of the game in its own branch or PR when practical.
+- Code reviews and PR validation must be performed by **Zeta**.
 - Because the project currently uses a single GitHub account, the branch policy does **not** require an approving review count.
-- Main still performs the review, but merge readiness is based on the review itself plus green required checks.
+- Zeta performs the review, and merge readiness is based on that review plus green required checks.
 - Merge only when required checks are green.
 
 ## Required checks before merge
@@ -46,3 +47,4 @@ PYTHONPATH=. python -m unittest discover -s tests -p 'test_*.py' -v
 - **Delta**: intrigue, sabotage, espionage
 - **Epsilon**: climate, catastrophes, myths
 - **Main**: integration, UI, overall game loop
+- **Zeta**: PR review, validation, and cross-cutting quality control
