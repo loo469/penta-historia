@@ -64,4 +64,5 @@ class WorldState:
     suggestions: list[Suggestion] = field(default_factory=list)
     log: list[str] = field(default_factory=list)
     tick_count: int = 0
+    war_state: dict[str, object] = field(default_factory=dict)
 

@@ -4,6 +4,7 @@ from typing import Protocol
 
 from src.domain.climate import Catastrophe, ClimateState, Myth, RegionSnapshot
 from src.domain.model import WorldState
+from src.domain.war import FactionTerritory, Front, Province
 
 
 class WorldGeneratorPort(Protocol):
@@ -35,4 +36,22 @@ class WorldEventPort(Protocol):
 
 class MythLedgerPort(Protocol):
     def record(self, myth: Myth) -> None: ...
+
+
+class MapRepository(Protocol):
+    def list_provinces(self) -> list[Province]: ...
+    def save_provinces(self, provinces: list[Province]) -> None: ...
+
+
+class FactionStateRepository(Protocol):
+    def list_faction_territories(self) -> dict[int, FactionTerritory]: ...
+    def save_faction_territories(self, territories: dict[int, FactionTerritory]) -> None: ...
+
+
+class BattleResolverPort(Protocol):
+    def resolve_advantage(self, front: Front, territories: dict[int, FactionTerritory]) -> float: ...
+
+
+class WorldEventBus(Protocol):
+    def publish(self, event_name: str, payload: dict[str, object]) -> None: ...
 
