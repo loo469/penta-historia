@@ -27,26 +27,62 @@ Transformer le prototype actuel en une base hexagonale plus claire, tout en enri
 - proposer puis implémenter une première vraie notion de front
 - rendre la pression de guerre plus lisible que le simple hasard local
 
+Premier lot concret:
+- poser `Province`, `Front`, `FactionTerritory`, `SupplyLevel`, `BorderSegment`
+- implémenter `DetectFronts`, `ExpandTerritory`, `ResolveBorderPressure`, `StabilizeCapturedProvince`
+- définir les ports `MapRepository`, `FactionStateRepository`, `BattleResolverPort`, `WorldEventBus`
+- livrer un adaptateur mémoire + des tests métier sur expansion et consolidation
+
 ### Beta
 - enrichir le modèle ville/ressources
 - introduire un début de logistique ou de flux entre villes
+
+Premier lot concret:
+- poser `City`, `ResourceStock`, `ProductionRule`, `TradeRoute`
+- implémenter `UpdateCityEconomy`, `ProduceResources`, `ConsumeNeeds`, `PlanLogisticsFlows`
+- définir `CityRepository`, `MarketRepository`, `RouteRepository`, `ClockPort`, `EventBusPort`
+- livrer un adaptateur mémoire + tests sur production, pénurie, transferts et prix
 
 ### Gamma
 - introduire une première couche de recherche/culture plus structurée
 - préparer un système simple d'événements historiques
 
+Premier lot concret:
+- poser `Culture`, `ResearchState`, `DivergencePoint`, `HistoricalEvent`
+- implémenter `AdvanceResearch`, `EvolveCulture`, `RegisterDivergence`, `TriggerHistoricalEvent`
+- définir `CultureRepository`, `ResearchRepository`, `EventBus`, `RandomProvider`, `Clock`
+- préparer un loader JSON/YAML et les tests unitaires métier
+
 ### Delta
 - rendre l'intrigue plus explicite, avec cible, effet, risque ou chaleur
 - éviter que le sabotage soit seulement un malus aléatoire invisible
+
+Premier lot concret:
+- poser `Cellule`, `Agent`, `OperationClandestine`, `Rumeur`, `NiveauAlerte`
+- implémenter `LancerOperation`, `RésoudreSabotage`, `DiffuserRumeur`, `CollecterRenseignement`
+- définir `WorldReadPort`, `FactionReadPort`, `ClockPort`, `RandomPort`, `EventBusPort`
+- livrer un repo mémoire + tests sur détection, risque et exposition du réseau
 
 ### Epsilon
 - enrichir les saisons/anomalies climatiques
 - connecter les effets climat aux récoltes, villes ou tensions
 
+Premier lot concret:
+- poser `ClimateState`, `SeasonCycle`, `Catastrophe`, `Myth`, `RegionClimateProfile`
+- implémenter `AdvanceSeasons`, `UpdateRegionalClimate`, `TriggerCatastrophe`, `RegisterMythFromEvent`
+- définir `ClimateRepositoryPort`, `WorldReadPort`, `WorldEventPort`, `MythLedgerPort`
+- livrer des adaptateurs mémoire + tests sur une année simulée
+
 ### Zeta
 - relire les PR
 - vérifier la cohérence avec l'architecture hexagonale
 - valider seulement les PR propres, compréhensibles et testées
+
+Premier lot concret:
+- suivre l'état des PR ouvertes
+- appliquer une grille de validation commune
+- vérifier la cohérence inter-PR et les collisions d'architecture
+- produire des verdicts simples: valide, valide sous conditions, à reprendre
 
 ## Règles de coordination
 
