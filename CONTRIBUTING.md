@@ -8,6 +8,7 @@ We work through **pull requests**.
 - Create a branch for each change.
 - Open a PR for review and discussion.
 - Code reviews and PR validation must be performed by **Main**.
+- If a PR is acceptable and checks are green, **Main should approve it**, not just observe it.
 - Merge only when required checks are green.
 
 ## Required checks before merge
