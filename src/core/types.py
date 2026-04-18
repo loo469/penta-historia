@@ -1,71 +1,10 @@
-from __future__ import annotations
+from src.domain.model import AgentName, City, Civilization, ClimateState, Suggestion, WorldState
 
-from dataclasses import dataclass, field
-from enum import Enum
-
-
-class AgentName(str, Enum):
-    ALPHA = "Alpha"
-    BETA = "Beta"
-    GAMMA = "Gamma"
-    DELTA = "Delta"
-    EPSILON = "Epsilon"
-
-
-@dataclass
-class Civilization:
-    civ_id: int
-    name: str
-    color: tuple[int, int, int]
-    food: float = 10.0
-    industry: float = 10.0
-    knowledge: float = 0.0
-    influence: float = 0.0
-    stability: float = 10.0
-    military: float = 10.0
-    culture: float = 0.0
-
-
-@dataclass
-class City:
-    name: str
-    civ_id: int
-    x: int
-    y: int
-    population: float = 10.0
-    storage: float = 5.0
-
-
-@dataclass
-class ClimateState:
-    season_index: int = 0
-    year: int = 1
-    anomaly: str = "stable"
-    fertility_modifier: float = 1.0
-
-    @property
-    def season_name(self) -> str:
-        return ["Printemps", "Été", "Automne", "Hiver"][self.season_index % 4]
-
-
-@dataclass
-class Suggestion:
-    agent: AgentName
-    title: str
-    description: str
-    effect_key: str
-
-
-@dataclass
-class WorldState:
-    width: int
-    height: int
-    owners: list[list[int | None]]
-    fertility: list[list[float]]
-    civilizations: dict[int, Civilization]
-    cities: list[City]
-    climate: ClimateState
-    suggestions: list[Suggestion] = field(default_factory=list)
-    log: list[str] = field(default_factory=list)
-    tick_count: int = 0
-
+__all__ = [
+    "AgentName",
+    "City",
+    "Civilization",
+    "ClimateState",
+    "Suggestion",
+    "WorldState",
+]
