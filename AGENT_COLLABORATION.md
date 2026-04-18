@@ -2,6 +2,7 @@
 
 Ce prototype est développé avec les cinq agents comme responsables de systèmes.
 
+Main coordonne le développement global.
 Zeta joue un rôle transversal de validation et de revue de code.
 
 ## Contributions intégrées

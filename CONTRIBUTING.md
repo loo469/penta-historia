@@ -46,5 +46,5 @@ PYTHONPATH=. python -m unittest discover -s tests -p 'test_*.py' -v
 - **Gamma**: culture, research, alternate history
 - **Delta**: intrigue, sabotage, espionage
 - **Epsilon**: climate, catastrophes, myths
-- **Main**: integration, UI, overall game loop
+- **Main**: development coordination, integration, UI, overall game loop
 - **Zeta**: PR review, validation, and cross-cutting quality control

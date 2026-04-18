@@ -34,7 +34,7 @@ python -m src.game
 - **Gamma** : culture, recherche, histoire alternative
 - **Delta** : intrigue, sabotage, déstabilisation
 - **Epsilon** : climat, saisons, catastrophes, mythes
-- **Main** : intégration, loop de jeu, UI, arbitrage des systèmes
+- **Main** : coordination du développement, intégration, loop de jeu, UI, arbitrage des systèmes
 - **Zeta** : validation des PR, revue de code, cohérence transversale
 
 ## État
