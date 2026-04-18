@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
+from src.domain.economy import ProductionRule, ResourceStock, ResourceType, TradeRoute
+
 
 class AgentName(str, Enum):
     ALPHA = "Alpha"
@@ -33,7 +35,11 @@ class City:
     x: int
     y: int
     population: float = 10.0
+    fertility: float = 1.0
+    infrastructure: float = 1.0
     storage: float = 5.0
+    stocks: dict[ResourceType, ResourceStock] = field(default_factory=dict)
+    production_rules: list[ProductionRule] = field(default_factory=list)
 
 
 @dataclass
@@ -65,6 +71,8 @@ class WorldState:
     civilizations: dict[int, Civilization]
     cities: list[City]
     climate: ClimateState
+    trade_routes: list[TradeRoute] = field(default_factory=list)
+    market_prices: dict[str, dict[ResourceType, float]] = field(default_factory=dict)
     suggestions: list[Suggestion] = field(default_factory=list)
     log: list[str] = field(default_factory=list)
     tick_count: int = 0
