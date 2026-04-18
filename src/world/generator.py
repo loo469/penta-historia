@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 
+from src.application.gamma_use_cases import build_default_culture, build_default_research_state
 from src.core.types import City, Civilization, ClimateState, WorldState
 
 
@@ -59,6 +60,8 @@ def generate_world(width: int = 28, height: int = 18, civ_count: int = 4) -> Wor
         civilizations=civilizations,
         cities=cities,
         climate=ClimateState(),
+        cultures={civ_id: build_default_culture(civ_id) for civ_id in civilizations},
+        research_states={civ_id: build_default_research_state(civ_id) for civ_id in civilizations},
     )
     world.log.append("Le monde a été généré.")
     return world
