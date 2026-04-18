@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from src.domain.council import apply_suggestion, build_suggestions
 from src.domain.model import Suggestion, WorldState
-from src.ui.council import apply_suggestion, build_suggestions
 
 
 class DefaultCouncilAdapter:
@@ -10,4 +10,3 @@ class DefaultCouncilAdapter:
 
     def apply_suggestion(self, world: WorldState, effect_key: str) -> None:
         apply_suggestion(world, effect_key)
-

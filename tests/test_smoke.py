@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from src.ui.council import apply_suggestion, build_suggestions
+from src.domain.council import apply_suggestion, build_suggestions
 from src.world.generator import generate_world
 
 
