@@ -1,25 +1,28 @@
 from __future__ import annotations
 
-import random
-
+from src.adapters.climate.in_memory import (
+    InMemoryClimateRepository,
+    InMemoryMythLedger,
+    WorldStateEventAdapter,
+    WorldStateReadAdapter,
+)
+from src.application.climate_use_cases import (
+    AdvanceSeasons,
+    RegisterMythFromEvent,
+    TriggerCatastrophe,
+    UpdateRegionalClimate,
+)
 from src.core.types import WorldState
 
 
 def tick_climate(world: WorldState) -> None:
-    world.climate.season_index = (world.climate.season_index + 1) % 4
-    if world.climate.season_index == 0:
-        world.climate.year += 1
+    climate_repository = InMemoryClimateRepository(world)
+    world_reader = WorldStateReadAdapter(world)
+    world_events = WorldStateEventAdapter(world)
+    myth_ledger = InMemoryMythLedger(world)
 
-    if world.climate.season_name == "Hiver":
-        world.climate.fertility_modifier = 0.8
-    elif world.climate.season_name == "Été":
-        world.climate.fertility_modifier = 1.15
-    else:
-        world.climate.fertility_modifier = 1.0
-
-    world.climate.anomaly = random.choice(["stable", "stable", "dry", "storm"])
-    if world.climate.anomaly == "dry":
-        world.climate.fertility_modifier *= 0.9
-    elif world.climate.anomaly == "storm":
-        world.climate.fertility_modifier *= 0.95
-
+    AdvanceSeasons(climate_repository, world_events).execute()
+    UpdateRegionalClimate(climate_repository, world_reader, world_events).execute()
+    catastrophe = TriggerCatastrophe(climate_repository, world_reader, world_events).execute()
+    if catastrophe is not None:
+        RegisterMythFromEvent(climate_repository, myth_ledger, world_events).from_catastrophe(catastrophe)

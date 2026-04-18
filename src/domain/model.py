@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
+from src.domain.climate import ClimateState
 from src.domain.gamma import Culture, DivergencePoint, HistoricalEvent, ResearchState
 
 
@@ -36,18 +37,6 @@ class City:
     y: int
     population: float = 10.0
     storage: float = 5.0
-
-
-@dataclass
-class ClimateState:
-    season_index: int = 0
-    year: int = 1
-    anomaly: str = "stable"
-    fertility_modifier: float = 1.0
-
-    @property
-    def season_name(self) -> str:
-        return ["Printemps", "Été", "Automne", "Hiver"][self.season_index % 4]
 
 
 @dataclass
