@@ -16,6 +16,8 @@ class SmokeTests(unittest.TestCase):
         self.assertEqual(len(world.owners[0]), 12)
         self.assertEqual(len(world.civilizations), 4)
         self.assertEqual(len(world.cities), 4)
+        self.assertEqual(len(world.cultures), 4)
+        self.assertEqual(len(world.research_states), 4)
 
     def test_council_generates_five_suggestions(self) -> None:
         world = generate_world()
