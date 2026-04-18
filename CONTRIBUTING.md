@@ -24,6 +24,8 @@ If Sonar is red, the PR is **not** ready to merge.
 - Update tests when behavior changes.
 - Keep the project runnable.
 - Document important gameplay or architecture decisions in the repo.
+- Move the codebase toward a **hexagonal architecture** with clear **ports and adapters**.
+- Avoid coupling core game rules directly to Pygame or other external tools.
 
 ## Local checks
 
