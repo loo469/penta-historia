@@ -90,6 +90,8 @@ class WorldStateEventBus:
         self.world = world
 
     def publish(self, event_name: str, payload: dict[str, object]) -> None:
+        self.world.emitted_events.append({"topic": event_name, "payload": payload})
+
         if event_name == "ProvinceCaptured":
             attacker_id = int(payload["attacker"])
             defender_id = int(payload["defender"])
@@ -107,3 +109,18 @@ class WorldStateEventBus:
             self.world.log.append(
                 f"{owner_name} stabilise l'arrière en ({x}, {y}) et sécurise sa nouvelle frontière."
             )
+        elif event_name == "FrontCreated":
+            attacker_id = int(payload["attacker"])
+            defender_id = int(payload["defender"])
+            attacker_name = self.world.civilizations[attacker_id].name
+            defender_name = self.world.civilizations[defender_id].name
+            length = int(payload["length"])
+            self.world.log.append(
+                f"Un nouveau front s'étire entre {attacker_name} et {defender_name} sur {length} segments."
+            )
+        elif event_name == "FrontCollapsed":
+            attacker_id = int(payload["attacker"])
+            defender_id = int(payload["defender"])
+            attacker_name = self.world.civilizations[attacker_id].name
+            defender_name = self.world.civilizations[defender_id].name
+            self.world.log.append(f"Le front entre {attacker_name} et {defender_name} s'effondre.")

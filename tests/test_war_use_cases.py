@@ -10,6 +10,8 @@ from src.adapters.persistence.in_memory_war import (
 )
 from src.application.war_use_cases import DetectFronts, ExpandTerritory, ResolveBorderPressure, StabilizeCapturedProvince
 from src.domain.model import Civilization, ClimateState, WorldState
+from src.sim.war import tick_war
+from src.ui.map_view import build_war_overlay
 
 
 class WarUseCasesTests(unittest.TestCase):
@@ -57,6 +59,34 @@ class WarUseCasesTests(unittest.TestCase):
         self.assertGreater(pressures[(0, 1)], pressures[(1, 0)])
         self.assertGreater(pressures[(0, 1)], 0.58)
 
+    def test_expand_territory_returns_none_when_front_pressure_is_too_low(self) -> None:
+        world = self._build_world()
+        world.civilizations[0].military = 8.0
+        world.civilizations[0].industry = 8.0
+        world.civilizations[0].stability = 8.0
+        world.civilizations[0].food = 8.0
+        world.civilizations[0].influence = 0.0
+        world.civilizations[1].military = 8.0
+        world.civilizations[1].industry = 8.0
+        world.civilizations[1].stability = 8.0
+        world.civilizations[1].food = 8.0
+        world.civilizations[1].influence = 0.0
+
+        map_repository = InMemoryMapRepository(world)
+        faction_state_repository = InMemoryFactionStateRepository(world, map_repository)
+        battle_resolver = WorldStateBattleResolver(world)
+        event_bus = WorldStateEventBus(world)
+
+        captured = ExpandTerritory(
+            map_repository=map_repository,
+            faction_state_repository=faction_state_repository,
+            battle_resolver=battle_resolver,
+            event_bus=event_bus,
+        ).execute(faction_id=0)
+
+        self.assertIsNone(captured)
+        self.assertFalse(world.log)
+
     def test_expand_and_stabilize_captured_province(self) -> None:
         world = self._build_world()
         map_repository = InMemoryMapRepository(world)
@@ -91,6 +121,43 @@ class WarUseCasesTests(unittest.TestCase):
         provinces_after_second_tick = {province.coord: province for province in map_repository.list_provinces()}
         self.assertFalse(provinces_after_second_tick[captured.coord].contested)
         self.assertTrue(any("stabilise l'arrière" in entry for entry in world.log))
+
+    def test_tick_war_emits_front_creation_and_collapse_events(self) -> None:
+        world = self._build_world()
+
+        tick_war(world)
+        topics_after_first_tick = [event["topic"] for event in world.emitted_events]
+        self.assertIn("FrontCreated", topics_after_first_tick)
+
+        world.owners = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+        ]
+        world.war_state["province_data"] = {}
+
+        tick_war(world)
+        topics_after_second_tick = [event["topic"] for event in world.emitted_events]
+        self.assertIn("FrontCollapsed", topics_after_second_tick)
+
+    def test_war_overlay_marks_contested_provinces_and_front_segments(self) -> None:
+        world = self._build_world()
+        map_repository = InMemoryMapRepository(world)
+        faction_state_repository = InMemoryFactionStateRepository(world, map_repository)
+        battle_resolver = WorldStateBattleResolver(world)
+        event_bus = WorldStateEventBus(world)
+
+        ExpandTerritory(
+            map_repository=map_repository,
+            faction_state_repository=faction_state_repository,
+            battle_resolver=battle_resolver,
+            event_bus=event_bus,
+        ).execute(faction_id=0)
+
+        contested, borders = build_war_overlay(world)
+
+        self.assertTrue(contested)
+        self.assertTrue(borders)
 
 
 if __name__ == "__main__":
