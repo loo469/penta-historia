@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
+from src.domain.intrigue import IntrigueState
+
 
 class AgentName(str, Enum):
     ALPHA = "Alpha"
@@ -65,7 +67,7 @@ class WorldState:
     civilizations: dict[int, Civilization]
     cities: list[City]
     climate: ClimateState
+    intrigue: IntrigueState = field(default_factory=IntrigueState)
     suggestions: list[Suggestion] = field(default_factory=list)
     log: list[str] = field(default_factory=list)
     tick_count: int = 0
-
