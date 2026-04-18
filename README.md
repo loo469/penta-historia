@@ -44,6 +44,8 @@ Ce dépôt contient un squelette jouable, pensé pour être enrichi progressivem
 
 Le projet avance via **pull requests**.
 
+Cette ligne sert aussi de changement minimal pour déclencher une PR de test et vérifier le comportement de Sonar sur les commentaires et statuts.
+
 - pas de merge direct de features sur `main`
 - les checks **CI** et **Sonar** doivent être verts avant merge
 - voir `CONTRIBUTING.md` pour la règle de contribution
