@@ -39,3 +39,11 @@ python -m src.game
 ## État
 
 Ce dépôt contient un squelette jouable, pensé pour être enrichi progressivement par les agents.
+
+## Collaboration
+
+Le projet avance via **pull requests**.
+
+- pas de merge direct de features sur `main`
+- les checks **CI** et **Sonar** doivent être verts avant merge
+- voir `CONTRIBUTING.md` pour la règle de contribution
