@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Project README
+    url: https://github.com/loo469/penta-historia/blob/main/README.md
+    about: Start with the README for local setup and controls.

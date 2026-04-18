@@ -1,0 +1,42 @@
+name: Feature request
+description: Suggest a feature or improvement for Penta Historia
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What do you want to add or improve?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Alpha
+        - Beta
+        - Gamma
+        - Delta
+        - Epsilon
+        - Core/UI
+        - Tooling/CI
+    validations:
+      required: true
+
+  - type: textarea
+    id: value
+    attributes:
+      label: Why it matters
+      description: What player or development value does this bring?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed implementation
+      description: Optional, rough implementation idea.
