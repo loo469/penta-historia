@@ -8,7 +8,8 @@ We work through **pull requests**.
 - Create a branch for each change.
 - Open a PR for review and discussion.
 - Code reviews and PR validation must be performed by **Main**.
-- If a PR is acceptable and checks are green, **Main should approve it**, not just observe it.
+- Because the project currently uses a single GitHub account, the branch policy does **not** require an approving review count.
+- Main still performs the review, but merge readiness is based on the review itself plus green required checks.
 - Merge only when required checks are green.
 
 ## Required checks before merge
